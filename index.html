@@ -1,0 +1,59 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+
+const steps = ["วันเกิด", "BMI", "ไลฟ์สไตล์", "เป้าหมาย", "ตั้งเป้าน้ำหนัก", "สรุปเป้าหมาย"];
+
+export default function HealthForm() {
+  const [step, setStep] = useState(0);
+  const [data, setData] = useState({ birthDate: "", weight: "", height: "", lifestyle: "", goal: "", targetWeight: "" });
+
+  const nextStep = () => setStep((prev) => Math.min(prev + 1, steps.length - 1));
+  const prevStep = () => setStep((prev) => Math.max(prev - 1, 0));
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="bg-white shadow-lg rounded-2xl p-6 w-full max-w-md">
+        <h2 className="text-xl font-semibold text-gray-800 text-center">{steps[step]}</h2>
+        <div className="mt-4">
+          {step === 0 && (
+            <input type="date" className="w-full p-2 border rounded-lg" onChange={(e) => setData({ ...data, birthDate: e.target.value })} />
+          )}
+          {step === 1 && (
+            <div className="flex flex-col gap-2">
+              <input type="number" placeholder="ส่วนสูง (ซม.)" className="w-full p-2 border rounded-lg" onChange={(e) => setData({ ...data, height: e.target.value })} />
+              <input type="number" placeholder="น้ำหนัก (กก.)" className="w-full p-2 border rounded-lg" onChange={(e) => setData({ ...data, weight: e.target.value })} />
+            </div>
+          )}
+          {step === 2 && (
+            <div className="flex flex-col gap-2">
+              {["นักกีฬา", "แอคทีฟมาก", "ปานกลาง", "เบา ๆ", "ไม่ออกกำลังกาย"].map((type) => (
+                <button key={type} className={`p-2 rounded-lg border ${data.lifestyle === type ? "bg-blue-500 text-white" : "bg-gray-200"}`} onClick={() => setData({ ...data, lifestyle: type })}>{type}</button>
+              ))}
+            </div>
+          )}
+          {step === 3 && (
+            <div className="flex flex-col gap-2">
+              {["รักษาน้ำหนัก", "เพิ่มน้ำหนัก", "ลดน้ำหนัก", "เพิ่มกล้ามเนื้อ"].map((goal) => (
+                <button key={goal} className={`p-2 rounded-lg border ${data.goal === goal ? "bg-blue-500 text-white" : "bg-gray-200"}`} onClick={() => setData({ ...data, goal })}>{goal}</button>
+              ))}
+            </div>
+          )}
+          {step === 4 && (
+            <input type="number" placeholder="เป้าหมายน้ำหนัก (กก.)" className="w-full p-2 border rounded-lg" onChange={(e) => setData({ ...data, targetWeight: e.target.value })} />
+          )}
+          {step === 5 && (
+            <div className="text-center">
+              <p>น้ำหนักเป้าหมายของคุณคือ {data.targetWeight} กก.</p>
+              <p>แคลอรี่ที่แนะนำ: {data.goal === "ลดน้ำหนัก" ? 1500 : data.goal === "เพิ่มน้ำหนัก" ? 2500 : 2000} kcal</p>
+              <p>คาร์โบไฮเดรตที่แนะนำ: {data.goal === "ลดน้ำหนัก" ? "150g" : "250g"}</p>
+            </div>
+          )}
+        </div>
+        <div className="flex justify-between mt-4">
+          {step > 0 && <button className="px-4 py-2 bg-gray-300 rounded-lg" onClick={prevStep}>ย้อนกลับ</button>}
+          {step < steps.length - 1 ? <button className="px-4 py-2 bg-blue-500 text-white rounded-lg" onClick={nextStep}>ถัดไป</button> : null}
+        </div>
+      </motion.div>
+    </div>
+  );
+}
